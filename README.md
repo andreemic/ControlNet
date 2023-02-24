@@ -252,9 +252,17 @@ The Guess Mode is also supported in [WebUI Plugin](https://github.com/Mikubill/s
 
 ![p](github_page/uci1.png)
 
-No prompts. Default WebUI parameters. Pure random results with the seed being 12345.
+No prompts. Default WebUI parameters. Pure random results with the seed being 12345. Standard SD1.5. Input scribble is in "test_imgs" folder to reproduce.
 
 ![p](github_page/uci2.png)
+
+Below is another challenging example:
+
+![p](github_page/uci3.png)
+
+No prompts. Default WebUI parameters. Pure random results with the seed being 12345. Standard SD1.5. Input scribble is in "test_imgs" folder to reproduce.
+
+![p](github_page/uci4.png)
 
 Note that in the guess mode, you will still be able to input prompts. The only difference is that the model will "try harder" to guess what is in the control map even if you do not provide the prompt. Just try it yourself!
 
