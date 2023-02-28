@@ -10,7 +10,7 @@ from pytorch_lightning.loggers import WandbLogger
 
 from torch.utils.data import random_split
 
-label = 'controlnet_mlsd_fixed_prompt'
+label = 'controlnet_mlsd_fixed_prompt1000'
 wandb_logger = WandbLogger(name=label,
                            log_model="all",
                     save_dir='logs',
