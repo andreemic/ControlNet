@@ -1,5 +1,9 @@
 .idea/
 
+logs/
+
+*.jpg
+*.png
 training/
 lightning_logs/
 image_log/
