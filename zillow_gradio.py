@@ -18,7 +18,7 @@ from cldm.ddim_hacked import DDIMSampler
 apply_canny = CannyDetector()
 
 model = create_model('./models/cldm_v15.yaml').cpu()
-model.load_state_dict(load_state_dict('./models/control_sd15_canny.pth', location='cuda'))
+model.load_state_dict(load_state_dict('./lightning_logs/version_2/checkpoints/epoch=56-step=20633.ckpt', location='cuda'))
 model = model.cuda()
 ddim_sampler = DDIMSampler(model)
 
@@ -31,7 +31,7 @@ def process(input_image, prompt, a_prompt, n_prompt, num_samples, image_resoluti
         detected_map = apply_canny(img, low_threshold, high_threshold)
         detected_map = HWC3(detected_map)
 
-        control = torch.from_numpy(detected_map.copy()).float().cuda() / 255.0
+        control = torch.from_numpy(img).float().cuda() / 255.0
         control = torch.stack([control for _ in range(num_samples)], dim=0)
         control = einops.rearrange(control, 'b h w c -> b c h w').clone()
 
@@ -54,21 +54,22 @@ def process(input_image, prompt, a_prompt, n_prompt, num_samples, image_resoluti
                                                      shape, cond, verbose=False, eta=eta,
                                                      unconditional_guidance_scale=scale,
                                                      unconditional_conditioning=un_cond)
-
+        print(samples, intermediates)
+        print(samples.shape, intermediates.shape)
         if config.save_memory:
             model.low_vram_shift(is_diffusing=False)
 
-        x_samples = model.decode_first_stage(samples)
+        x_samples = model.decode_first_stage(intermediates)
         x_samples = (einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 + 127.5).cpu().numpy().clip(0, 255).astype(np.uint8)
 
-        results = [x_samples[i] for i in range(num_samples)]
-    return [255 - detected_map] + results
+        results = [x_samples[i] for i in range(len(intermediates))]
+    return results
 
 
 block = gr.Blocks().queue()
 with block:
     with gr.Row():
-        gr.Markdown("## Control Stable Diffusion with Canny Edge Maps")
+        gr.Markdown("## furniture ai ip2p")
     with gr.Row():
         with gr.Column():
             input_image = gr.Image(source='upload', type="numpy")
@@ -94,4 +95,4 @@ with block:
     run_button.click(fn=process, inputs=ips, outputs=[result_gallery])
 
 
-block.launch(server_name='0.0.0.0')
+block.launch(server_name='0.0.0.0', share=True)

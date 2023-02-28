@@ -4,6 +4,8 @@ logs/
 
 *.jpg
 *.png
+*.zip
+zillow-3000_lightning_logs/
 training/
 lightning_logs/
 image_log/
