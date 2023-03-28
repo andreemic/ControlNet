@@ -7,6 +7,15 @@ from cldm.logger import ImageLogger
 from cldm.model import create_model, load_state_dict
 
 
+
+from torch.utils.data import random_split
+
+label = 'controlnet_roomprompt_20k'
+# wandb_logger = WandbLogger(name=label,
+#                            log_model="all",
+#                     save_dir='logs',
+#                     id=label)
+
 # Configs
 resume_path = './models/control_sd15_ini.ckpt'
 batch_size = 8
@@ -24,12 +33,31 @@ model.sd_locked = sd_locked
 model.only_mid_control = only_mid_control
 
 
+
 # Misc
 dataset = MyDataset()
-dataloader = DataLoader(dataset, num_workers=0, batch_size=batch_size, shuffle=True)
+# Determine the length of the validation set
+val_size = int(len(dataset) * 0.05)  # 5% of the dataset for validation
+
+# Determine the length of the training set
+train_size = len(dataset) - val_size
+
+# Use random_split to create the validation and training datasets
+train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+# Define the dataloaders for the training and validation datasets
+train_dataloader = DataLoader(train_dataset, num_workers=32, batch_size=batch_size, shuffle=True)
+val_dataloader = DataLoader(val_dataset, num_workers=32, batch_size=batch_size, shuffle=False)
+
 logger = ImageLogger(batch_frequency=logger_freq)
-trainer = pl.Trainer(gpus=1, precision=32, callbacks=[logger])
+trainer = pl.Trainer(
+    gpus=1, 
+    precision=32, 
+    callbacks=[logger], 
+    check_val_every_n_epoch=1
+)
 
 
-# Train!
-trainer.fit(model, dataloader)
+
+# Pass the dataloaders to the trainer
+trainer.fit(model, train_dataloader)
