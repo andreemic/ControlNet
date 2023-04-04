@@ -824,6 +824,7 @@ class LatentDiffusion(DDPM):
             z = self.first_stage_model.quantize.get_codebook_entry(z, shape=None)
             z = rearrange(z, 'b h w c -> b c h w').contiguous()
 
+        print(z)
         z = 1. / self.scale_factor * z
         return self.first_stage_model.decode(z)
 

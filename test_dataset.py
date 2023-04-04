@@ -4,13 +4,13 @@ import numpy as np
 
 from torch.utils.data import Dataset
 
+
 class MyDataset(Dataset):
     def __init__(self):
         self.data = []
-        with open('./training/zillow46k/prompt.json', 'rt') as f:
+        with open('./test/ds/prompt.json', 'rt') as f:
             for line in f:
-                item = (json.loads(line))
-                self.data.append(item)
+                self.data.append(json.loads(line))
 
     def __len__(self):
         return len(self.data)
@@ -23,9 +23,9 @@ class MyDataset(Dataset):
             target_filename = item['target']
             prompt = item['prompt']
 
-            source = cv2.imread('./training/zillow46k/' + source_filename)
+            source = cv2.imread('./test/ds/' + source_filename)
             source = cv2.resize(source, (512, 512))
-            target = cv2.imread('./training/zillow46k/' + target_filename)
+            target = cv2.imread('./test/ds/' + target_filename)
             target = cv2.resize(target, (512, 512))
 
             # Do not forget that OpenCV read images in BGR order.
@@ -38,7 +38,7 @@ class MyDataset(Dataset):
             # Normalize target images to [-1, 1].
             target = (target.astype(np.float32) / 127.5) - 1.0
 
-            return dict(jpg=target, txt=prompt, hint=source)
+            return dict(jpg=target, txt=prompt, hint=source, source_filename=source_filename)
         except Exception as e:
             print(f'failed to load {source_filename} or {target_filename}', e)
 

@@ -18,7 +18,7 @@ from cldm.ddim_hacked import DDIMSampler
 apply_canny = CannyDetector()
 
 model = create_model('./models/cldm_v15.yaml').cpu()
-model.load_state_dict(load_state_dict('./lightning_logs/version_2/checkpoints/epoch=56-step=20633.ckpt', location='cuda'))
+model.load_state_dict(load_state_dict('./checkpoints/epoch=02-step=16991.ckpt', location='cuda'))
 model = model.cuda()
 ddim_sampler = DDIMSampler(model)
 
@@ -55,7 +55,7 @@ def process(input_image, prompt, a_prompt, n_prompt, num_samples, image_resoluti
                                                      unconditional_guidance_scale=scale,
                                                      unconditional_conditioning=un_cond)
         print(samples, intermediates)
-        print(samples.shape, intermediates.shape)
+        # print(samples.shape, intermediates.shape)
         if config.save_memory:
             model.low_vram_shift(is_diffusing=False)
 
